@@ -1,6 +1,7 @@
 #include "stack.hpp"
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity) {
+    StackAssertFunc(stk, __FILE__, __LINE__);
     StackElem_t* tempPtr = (int*)calloc(initCapacity, sizeof(StackElem_t));
     assert(tempPtr);
 
@@ -13,13 +14,16 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity) {
 }
 
 void StackDtor(Stack_t* stk) {
+    StackAssertFunc(stk, __FILE__, __LINE__);
     free(stk->data);
     stk->data = NULL;
     stk->capacity = 0;
     stk->size = 0;
+    StackAssertFunc(stk, __FILE__, __LINE__);
 }
 
 Errors StackPush(Stack_t* stk, StackElem_t el) {
+    StackAssertFunc(stk, __FILE__, __LINE__);
     if (stk->size == stk->capacity) {
         StackReallocation(stk, PUSH_ID);
     }
@@ -32,6 +36,7 @@ Errors StackPush(Stack_t* stk, StackElem_t el) {
 }
 
 Errors StackPop(Stack_t* stk, StackElem_t* x) {
+    StackAssertFunc(stk, __FILE__, __LINE__);
     if (stk->size == 0) {
         return EMPTY_STACK;
     }
@@ -46,13 +51,19 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
 }
 
 void StackDump(Stack_t* stk) {
-    printf("Address: %p\n", stk->data);
-    printf("Capacity: %lu\n", stk->capacity);
-    printf("Size: %lu\n", stk->size);
-    printf("Stack:\n");
-    for(size_t i = 0; i < stk->size; i++) {
-        printf("[%d]\n", stk->data[i]);
+    printf("------------------------------------\n");
+    printf("capacity = %lu\n", stk->capacity);
+    printf("size = %lu\n", stk->size);
+    printf("data [%p]\n{\n", stk->data);
+    for(size_t i = 0; i < stk->capacity; i++) {
+        if(i < stk->size) {
+           printf("    *[%lu] = %d\n", i, stk->data[i]);
+        }
+        else {
+            printf("    [%lu] = %d\n", i, stk->data[i]);
+        }
     }
+    printf("}\n------------------------------------\n");
 }
 
 Errors StackOK(Stack_t* stk) {
@@ -71,17 +82,19 @@ void StackAssertFunc(Stack_t* stk, const char* file, int line) {
 }
 
 void StackReallocation(Stack_t* stk, FunkId id) {
+    StackAssertFunc(stk, __FILE__, __LINE__);
     StackElem_t* tempPtr = 0;
     if(id == PUSH_ID) {
-        tempPtr = (int*)realloc(stk->data, 2 * stk->capacity);
+        tempPtr = (StackElem_t*)realloc(stk->data, sizeof(StackElem_t) * (2 * stk->capacity));
         assert(tempPtr);
         stk->data = tempPtr;
         stk->capacity *= 2;
     }
     else if(id == POP_ID) {
-        tempPtr = (int*)realloc(stk->data, stk->capacity / 2);
+        tempPtr = (int*)realloc(stk->data, sizeof(StackElem_t) * (stk->capacity / 2));
         assert(tempPtr);
         stk->data = tempPtr;
         stk->capacity = stk->capacity / 2;
     }
+    StackAssertFunc(stk, __FILE__, __LINE__);
 }

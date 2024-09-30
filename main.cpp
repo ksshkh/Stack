@@ -5,7 +5,7 @@ int main(void) {
     Errors err = NO_ERROR;
     StackElem_t x = 0;
 
-    CHECKED_ StackCtor(&stk, 10);
+    CHECKED_ StackCtor(&stk, 1);
     StackDump(&stk);
     CHECKED_ StackPush(&stk, 100);
     StackDump(&stk);
