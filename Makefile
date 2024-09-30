@@ -12,12 +12,12 @@ CXXFLAGS =  -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-
    -fstack-protector -fstrict-overflow -fno-omit-frame-pointer -Wlarger-than=8192                  \
    -Wstack-usage=8192 -fsanitize=address -fsanitize=undefined -fPIE -Werror=vla
 
-build: main.o stack.o 
-	g++ main.o stack.o -o stack
+build: main.o stack.o
+	g++ $(CXXFLAGS) main.o stack.o -o stack
 main.o: main.cpp stack.hpp
-	g++ -c main.cpp
+	g++ -c $(CXXFLAGS) main.cpp
 stack.o: stack.cpp stack.hpp
-	g++ -c stack.cpp
+	g++ -c $(CXXFLAGS) stack.cpp
 
 .PHONY: clean
 clean:

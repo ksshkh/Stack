@@ -15,12 +15,12 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity) {
 void StackDtor(Stack_t* stk) {
     free(stk->data);
     stk->data = NULL;
-    stk->capacity = -1;
-    stk->size = -1;
+    stk->capacity = 0;
+    stk->size = 0;
+    free(stk);
 }
 
 Errors StackPush(Stack_t* stk, StackElem_t el) {
-    StackElem_t* tempPtr;
     if (stk->size == stk->capacity) {
         StackReallocation(stk, PUSH_ID);
     }
@@ -48,10 +48,10 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
 
 void StackDump(Stack_t* stk) {
     printf("Address: %p\n", stk->data);
-    printf("Capacity: %ld\n", stk->capacity);
-    printf("Size: %ld\n", stk->size);
+    printf("Capacity: %lu\n", stk->capacity);
+    printf("Size: %lu\n", stk->size);
     printf("Stack:\n");
-    for(int i = 0; i < stk->size; i++) {
+    for(size_t i = 0; i < stk->size; i++) {
         printf("[%d]\n", stk->data[i]);
     }
 }
@@ -83,6 +83,6 @@ void StackReallocation(Stack_t* stk, FunkId id) {
         tempPtr = (int*)realloc(stk->data, stk->capacity / 2);
         assert(tempPtr);
         stk->data = tempPtr;
-        stk->capacity / 2;
+        stk->capacity = stk->capacity / 2;
     }
 }
