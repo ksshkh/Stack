@@ -17,7 +17,6 @@ void StackDtor(Stack_t* stk) {
     stk->data = NULL;
     stk->capacity = 0;
     stk->size = 0;
-    free(stk);
 }
 
 Errors StackPush(Stack_t* stk, StackElem_t el) {
