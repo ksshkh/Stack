@@ -1,6 +1,7 @@
 #include "stack.hpp"
 
 int main(void) {
+    ON_DEBUG(printf("ggfgfg\n");)
     Stack_t stk = {};
     Errors err = NO_ERROR;
     StackElem_t x = 0;
@@ -17,7 +18,6 @@ int main(void) {
     CHECKED_ StackPop(&stk, &x);
     printf("%d\n", x);
     StackDump(&stk);
-    StackDtor(&stk);
 
     return 0;
 }
