@@ -76,8 +76,10 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
         return;
     }
     printf("------------------------------------\n");
+    printf("Stack_t [%p]\n", stk);
     printf("called from %s: %d (%s)\n", file, line, func);
     ON_DEBUG(printf("name born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
+    ON_DEBUG(printf("left canary: %#X\n", stk->left_canary);)
     printf("capacity = %lu\n", stk->capacity);
     printf("position = %lu\n", stk->position);
     printf("data [%p]\n", stk->data);
@@ -94,7 +96,9 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
             printf("    [%lu] = %d\n", i, stk->data[i]);
         }
     }
-    printf("}\n------------------------------------\n");
+    printf("}\n");
+    ON_DEBUG(printf("right canary: %#X\n", stk->right_canary);)
+    printf("------------------------------------\n");
 }
 
 Errors StackVerification(const Stack_t* stk) {
@@ -116,15 +120,6 @@ Errors StackVerification(const Stack_t* stk) {
     }
     return NO_ERROR;
 }
-
-// void StackAssertFunc(Stack_t* stk, const char* file, int line) {
-//     Errors err = StackVerification(stk);
-//     if(err) {
-//         StackDump(stk);
-//         printf("err: %d file: %s, line: %d\n", err, file, line);
-//         exit(1);
-//     }
-// }
 
 void StackReallocation(Stack_t* stk, FunkId id) {
     STACK_ASSERT(stk);

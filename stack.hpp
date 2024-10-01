@@ -43,7 +43,11 @@ enum Errors {
     NO_DATA
 };
 
+const StackElem_t CANARY = 0XACCE55ED;
+
 struct Stack_t {
+
+    ON_DEBUG(StackElem_t left_canary = CANARY;)
 
     ON_DEBUG(const char* stack_name = 0;)
     ON_DEBUG(const char* file = 0;)
@@ -53,6 +57,8 @@ struct Stack_t {
     StackElem_t* data = NULL;
     size_t position = 0;
     size_t capacity = 0;
+
+    ON_DEBUG(StackElem_t right_canary = CANARY;)
 };
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line);
@@ -66,8 +72,6 @@ Errors StackPop(Stack_t* stk, StackElem_t* x);
 void StackDump(Stack_t* stk, const char* file, const char* func, int line);
 
 Errors StackVerification(const Stack_t* stk);
-
-//void StackAssertFunc(Stack_t* stk, const char* file, int line);
 
 void StackReallocation(Stack_t* stk, FunkId id);
 
