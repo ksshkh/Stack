@@ -5,6 +5,7 @@ int main(void) {
     Stack_t stk = {};
     Errors err = NO_ERROR;
     StackElem_t x = 0;
+    //TESTING
 
     CHECKED_ STACK_CTOR(&stk, 1);
     stk.capacity = 0;
