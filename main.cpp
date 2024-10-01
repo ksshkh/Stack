@@ -6,18 +6,19 @@ int main(void) {
     Errors err = NO_ERROR;
     StackElem_t x = 0;
 
-    CHECKED_ StackCtor(&stk, 1);
-    StackDump(&stk);
+    CHECKED_ STACK_CTOR(&stk, 1);
+    stk.capacity = 0;
+    STACK_DUMP(&stk);
     CHECKED_ StackPush(&stk, 100);
-    StackDump(&stk);
+    STACK_DUMP(&stk);
     CHECKED_ StackPush(&stk, 200);
-    StackDump(&stk);
+    STACK_DUMP(&stk);
     CHECKED_ StackPop(&stk, &x);
     printf("%d\n", x);
-    StackDump(&stk);
+    STACK_DUMP(&stk);
     CHECKED_ StackPop(&stk, &x);
     printf("%d\n", x);
-    StackDump(&stk);
+    STACK_DUMP(&stk);
 
     return 0;
 }

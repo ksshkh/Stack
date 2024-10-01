@@ -2,15 +2,21 @@
 
 const char* errors_names[] = {"NO_ERROR", "SIZE_ERROR", "STACK_UNDERFLOW", "NO_STACK", "BAD_CAPACITY", "NO_DATA"}; //hpp?????????
 
-Errors StackCtor(Stack_t* stk, size_t initCapacity) {
+Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
     if(!stk) {
         printf("%s\n", errors_names[NO_STACK]);
         return NO_STACK;
     }
+
     else if(!initCapacity) {
         printf("%s\n", errors_names[BAD_CAPACITY]);
         return BAD_CAPACITY;
     }
+
+    ON_DEBUG(stk->file = file;)
+    ON_DEBUG(stk->func = func;)
+    ON_DEBUG(stk->line = line;)
+
     stk->data = (StackElem_t *) calloc(initCapacity, sizeof(StackElem_t));
     assert(stk->data);
 
@@ -64,12 +70,14 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
     return NO_ERROR;
 }
 
-void StackDump(Stack_t* stk) {
+void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
     if(!stk) {
         printf("%s\n", errors_names[NO_STACK]);
         return;
     }
     printf("------------------------------------\n");
+    printf("called from %s: %d (%s)\n", file, line, func);
+    ON_DEBUG(printf("name born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
     printf("capacity = %lu\n", stk->capacity);
     printf("position = %lu\n", stk->position);
     printf("data [%p]\n", stk->data);
