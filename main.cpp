@@ -1,7 +1,7 @@
 #include "stack.hpp"
 
 int main(void) {
-    ON_DEBUG(printf("ggfgfg\n");)
+
     Stack_t stk = {};
     Errors err = NO_ERROR;
     StackElem_t x = 0;
