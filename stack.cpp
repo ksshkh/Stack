@@ -1,6 +1,9 @@
 #include "stack.hpp"
 
-const char* errors_names[] = {"NO_ERROR", "SIZE_ERROR", "STACK_UNDERFLOW", "NO_STACK", "BAD_CAPACITY", "NO_DATA"}; //hpp?????????
+const char* errors_names[] = {"NO_ERROR", "SIZE_ERROR", "STACK_UNDERFLOW",
+                              "NO_STACK", "BAD_CAPACITY", "NO_DATA",
+                              "BAD_DATA_RIGHT_CANARY", "BAD_DATA_LEFT_CANARY",
+                              "BAD_STACK_RIGHT_CANARY", "BAD_STACK_LEFT_CANARY"}; //hpp?????????
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
     if(!stk) {
@@ -57,14 +60,16 @@ Errors StackPush(Stack_t* stk, StackElem_t el) {
 Errors StackPop(Stack_t* stk, StackElem_t* x) {
     STACK_ASSERT(stk);
 
-    if(!stk->position ON_DEBUG(- 2)) {
+    if(!stk->position) {
+        printf("%s\n", errors_names[STACK_UNDERFLOW]);
         return STACK_UNDERFLOW;
     }
+
     stk->position--;
     *x = stk->data[stk->position ON_DEBUG(+ 1)];
     stk->data[stk->position ON_DEBUG(+ 1)] = 0;
 
-    if(stk->capacity == stk->position * 4 ON_DEBUG(+ 2)) {
+    if(stk->capacity == stk->position * 4) {
         StackReallocation(stk, POP_ID);
     }
 
@@ -122,21 +127,34 @@ Errors StackVerification(const Stack_t* stk) {
         printf("%s\n", errors_names[STACK_UNDERFLOW]);
         return STACK_UNDERFLOW;
     }
+    ON_DEBUG(else if(stk->data[0] != DATA_CANARY) {                  \
+                printf("%s\n", errors_names[BAD_DATA_LEFT_CANARY]);  \
+                return BAD_DATA_LEFT_CANARY;                         \
+    })                                                               \
+
+    ON_DEBUG(else if(stk->data[stk->capacity + 1] != DATA_CANARY) {  \
+                printf("%s\n", errors_names[BAD_DATA_RIGHT_CANARY]); \
+                return BAD_DATA_RIGHT_CANARY;                        \
+    })                                                               \
     return NO_ERROR;
 }
 
 void StackReallocation(Stack_t* stk, FunkId id) {
     STACK_ASSERT(stk);
 
+    ON_DEBUG(stk->data[stk->capacity + 1] = 0;) //delete right canary
+
     if(id == PUSH_ID) {
         stk->capacity *= 2;
         stk->data = (StackElem_t *) realloc(stk->data, sizeof(StackElem_t) * (stk->capacity ON_DEBUG(+ 2)));
         assert(stk->data);
+        ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
     }
     else if(id == POP_ID) {
         stk->capacity /= 2;
         stk->data = (StackElem_t *) realloc(stk->data, sizeof(StackElem_t) * (stk->capacity ON_DEBUG(+ 2)));
         assert(stk->data);
+        ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
     }
 
     STACK_ASSERT(stk);
