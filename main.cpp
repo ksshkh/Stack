@@ -10,14 +10,15 @@ int main(void) {
     STACK_DUMP(&stk);
     CHECKED_ StackPush(&stk, 100);
     STACK_DUMP(&stk);
-    CHECKED_ StackPush(&stk, 200);
-    STACK_DUMP(&stk);
+    // CHECKED_ StackPush(&stk, 200);
+    // STACK_DUMP(&stk);
     CHECKED_ StackPop(&stk, &x);
     printf("%d\n", x);
     STACK_DUMP(&stk);
-    CHECKED_ StackPop(&stk, &x);
-    printf("%d\n", x);
-    STACK_DUMP(&stk);
+    // CHECKED_ StackPop(&stk, &x);
+    // printf("%d\n", x);
+    // STACK_DUMP(&stk);
+    StackDtor(&stk);
 
     return 0;
 }
