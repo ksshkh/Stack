@@ -26,6 +26,8 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     stk->capacity = initCapacity;
     stk->position = 0;
 
+    PoisonMaker(stk);
+
     ON_DEBUG(stk->data[0] = DATA_CANARY;)
     ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
 
@@ -67,7 +69,7 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
 
     stk->position--;
     *x = stk->data[stk->position ON_DEBUG(+ 1)];
-    stk->data[stk->position ON_DEBUG(+ 1)] = 0;
+    stk->data[stk->position ON_DEBUG(+ 1)] = POISON;
 
     if(stk->capacity == stk->position * 4) {
         StackReallocation(stk, POP_ID);
@@ -101,7 +103,7 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
            printf("    *[%lu] = %d\n", i ON_DEBUG(- 1), stk->data[i]);
         }
         else {
-            printf("    [%lu] = %d\n", i ON_DEBUG(- 1), stk->data[i]);
+            printf("    [%lu] = %d(POISON)\n", i ON_DEBUG(- 1), stk->data[i]);
         }
     }
     ON_DEBUG(printf("data right canary: %#X\n", stk->data[stk->capacity + 1]);)
@@ -136,6 +138,17 @@ Errors StackVerification(const Stack_t* stk) {
                 printf("%s\n", errors_names[BAD_DATA_RIGHT_CANARY]); \
                 return BAD_DATA_RIGHT_CANARY;                        \
     })                                                               \
+
+    ON_DEBUG(else if(stk->left_canary != STACK_CANARY) {             \
+                printf("%s\n", errors_names[BAD_STACK_LEFT_CANARY]); \
+                return BAD_STACK_LEFT_CANARY;                        \
+    })                                                               \
+
+    ON_DEBUG(else if(stk->right_canary != STACK_CANARY) {             \
+                printf("%s\n", errors_names[BAD_STACK_RIGHT_CANARY]); \
+                return BAD_STACK_RIGHT_CANARY;                        \
+    })                                                                \
+
     return NO_ERROR;
 }
 
@@ -156,6 +169,13 @@ void StackReallocation(Stack_t* stk, FunkId id) {
         assert(stk->data);
         ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
     }
+    PoisonMaker(stk);
 
     STACK_ASSERT(stk);
+}
+
+void PoisonMaker(Stack_t* stk) {
+    for(size_t i = stk->position ON_DEBUG(+ 1); i < stk->capacity ON_DEBUG( +1); i++) {
+        stk->data[i] = POISON;
+    }
 }

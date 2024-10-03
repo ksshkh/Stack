@@ -29,6 +29,8 @@
 
 typedef int StackElem_t;
 
+const StackElem_t POISON = -666;
+
 enum FunkId {
     PUSH_ID,
     POP_ID
@@ -79,5 +81,7 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line);
 Errors StackVerification(const Stack_t* stk);
 
 void StackReallocation(Stack_t* stk, FunkId id);
+
+void PoisonMaker(Stack_t* stk);
 
 #endif // STACK_HPP
