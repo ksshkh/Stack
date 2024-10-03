@@ -7,12 +7,12 @@ const char* errors_names[] = {"NO_ERROR", "SIZE_ERROR", "STACK_UNDERFLOW",
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
     if(!stk) {
-        printf("%s\n", errors_names[NO_STACK]);
+        printf(RED("%s\n"), errors_names[NO_STACK]);
         return NO_STACK;
     }
 
     else if(!initCapacity) {
-        printf("%s\n", errors_names[BAD_CAPACITY]);
+        printf(RED("%s\n"), errors_names[BAD_CAPACITY]);
         return BAD_CAPACITY;
     }
 
@@ -67,7 +67,7 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
     STACK_ASSERT(stk);
 
     if(!stk->position) {
-        printf("%s\n", errors_names[STACK_UNDERFLOW]);
+        printf(RED("%s\n"), errors_names[STACK_UNDERFLOW]);
         return STACK_UNDERFLOW;
     }
 
@@ -87,7 +87,7 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
 
 void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
     if(!stk) {
-        printf("%s\n", errors_names[NO_STACK]);
+        printf(RED("%s\n"), errors_names[NO_STACK]);
         return;
     }
     printf("------------------------------------\n");
@@ -122,46 +122,46 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
 Errors StackVerification(const Stack_t* stk) {
     if(!stk) {
         return NO_STACK;
-        printf("%s\n", errors_names[NO_STACK]);
+        printf(RED("%s\n"), errors_names[NO_STACK]);
     }
 
     else if(stk->position > 0 && stk->capacity < stk->position) {
-        printf("%s\n", errors_names[SIZE_ERROR]);
+        printf(RED("%s\n"), errors_names[SIZE_ERROR]);
         return SIZE_ERROR;
     }
 
     else if(!stk->capacity) {
-        printf("%s\n", errors_names[BAD_CAPACITY]);
+        printf(RED("%s\n"), errors_names[BAD_CAPACITY]);
         return BAD_CAPACITY;
     }
 
     else if(!stk->data) {
-        printf("%s\n", errors_names[STACK_UNDERFLOW]);
+        printf(RED("%s\n"), errors_names[STACK_UNDERFLOW]);
         return STACK_UNDERFLOW;
     }
 
     ON_DEBUG(else if(stk->hash != Hash(stk)) {                       \
-                printf("%s\n", errors_names[BAD_HASH]);              \
+                printf(RED("%s\n"), errors_names[BAD_HASH]);              \
                 return BAD_HASH;                                     \
     })                                                               \
 
     ON_DEBUG(else if(stk->data[0] != DATA_CANARY) {                  \
-                printf("%s\n", errors_names[BAD_DATA_LEFT_CANARY]);  \
+                printf(RED("%s\n"), errors_names[BAD_DATA_LEFT_CANARY]);  \
                 return BAD_DATA_LEFT_CANARY;                         \
     })                                                               \
 
     ON_DEBUG(else if(stk->data[stk->capacity + 1] != DATA_CANARY) {  \
-                printf("%s\n", errors_names[BAD_DATA_RIGHT_CANARY]); \
+                printf(RED("%s\n"), errors_names[BAD_DATA_RIGHT_CANARY]); \
                 return BAD_DATA_RIGHT_CANARY;                        \
     })                                                               \
 
     ON_DEBUG(else if(stk->left_canary != STACK_CANARY) {             \
-                printf("%s\n", errors_names[BAD_STACK_LEFT_CANARY]); \
+                printf(RED("%s\n"), errors_names[BAD_STACK_LEFT_CANARY]); \
                 return BAD_STACK_LEFT_CANARY;                        \
     })                                                               \
 
     ON_DEBUG(else if(stk->right_canary != STACK_CANARY) {            \
-                printf("%s\n", errors_names[BAD_STACK_RIGHT_CANARY]);\
+                printf(RED("%s\n"), errors_names[BAD_STACK_RIGHT_CANARY]);\
                 return BAD_STACK_RIGHT_CANARY;                       \
     })                                                               \
 

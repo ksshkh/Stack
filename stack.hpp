@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "colors.hpp"
+
 #define DEBUG
 
 #ifdef DEBUG
