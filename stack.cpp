@@ -160,10 +160,10 @@ Errors StackVerification(const Stack_t* stk) {
                 return BAD_STACK_LEFT_CANARY;                        \
     })                                                               \
 
-    ON_DEBUG(else if(stk->right_canary != STACK_CANARY) {             \
-                printf("%s\n", errors_names[BAD_STACK_RIGHT_CANARY]); \
-                return BAD_STACK_RIGHT_CANARY;                        \
-    })                                                                \
+    ON_DEBUG(else if(stk->right_canary != STACK_CANARY) {            \
+                printf("%s\n", errors_names[BAD_STACK_RIGHT_CANARY]);\
+                return BAD_STACK_RIGHT_CANARY;                       \
+    })                                                               \
 
     return NO_ERROR;
 }
@@ -202,6 +202,12 @@ Hash_t Hash(const Stack_t* stk) {
     Hash_t hash = 0;
     for (size_t i = 0 ON_DEBUG( +1); i < stk->position ON_DEBUG( +1); i++) {
         hash += stk->data[i];
+        hash += hash << 10;
+        hash ^= hash >> 6;
     }
+    hash += hash << 3;
+    hash ^= hash >> 11;
+    hash += hash << 15;
+    
     return hash;
 }
