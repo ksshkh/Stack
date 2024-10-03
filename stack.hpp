@@ -29,6 +29,13 @@
 
 typedef int StackElem_t;
 
+typedef unsigned long long int Hash_t;
+
+typedef unsigned long long int Canary_t;
+
+const Canary_t STACK_CANARY = 0XACCE55ED;
+const Canary_t DATA_CANARY = 0XC0FFEE;
+
 const StackElem_t POISON = -666;
 
 enum FunkId {
@@ -46,15 +53,15 @@ enum Errors {
     BAD_DATA_RIGHT_CANARY,
     BAD_DATA_LEFT_CANARY,
     BAD_STACK_RIGHT_CANARY,
-    BAD_STACK_LEFT_CANARY
+    BAD_STACK_LEFT_CANARY,
+    BAD_HASH
 };
-
-const StackElem_t STACK_CANARY = 0XACCE55ED;
-const StackElem_t DATA_CANARY = 0XC0FFEE;
 
 struct Stack_t {
 
-    ON_DEBUG(StackElem_t left_canary = STACK_CANARY;)
+    ON_DEBUG(Canary_t left_canary = STACK_CANARY;)
+
+    ON_DEBUG(Hash_t hash = 0;)
 
     ON_DEBUG(const char* stack_name = 0;)
     ON_DEBUG(const char* file = 0;)
@@ -65,7 +72,7 @@ struct Stack_t {
     size_t position = 0;
     size_t capacity = 0;
 
-    ON_DEBUG(StackElem_t right_canary = STACK_CANARY;)
+    ON_DEBUG(Canary_t right_canary = STACK_CANARY;)
 };
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line);
@@ -83,5 +90,7 @@ Errors StackVerification(const Stack_t* stk);
 void StackReallocation(Stack_t* stk, FunkId id);
 
 void PoisonMaker(Stack_t* stk);
+
+Hash_t Hash(const Stack_t* stk);
 
 #endif // STACK_HPP

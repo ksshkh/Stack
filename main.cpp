@@ -10,6 +10,7 @@ int main(void) {
     STACK_DUMP(&stk);
     CHECKED_ StackPush(&stk, 100);
     STACK_DUMP(&stk);
+    printf("!!!!!%llu!!!!!\n", Hash(&stk));
     CHECKED_ StackPush(&stk, 200);
     STACK_DUMP(&stk);
     CHECKED_ StackPush(&stk, 300);
