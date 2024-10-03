@@ -199,15 +199,13 @@ void PoisonMaker(Stack_t* stk) {
 }
 
 Hash_t Hash(const Stack_t* stk) {
-    Hash_t hash = 0;
+    Hash_t hash = 0, high;
     for (size_t i = 0 ON_DEBUG( +1); i < stk->position ON_DEBUG( +1); i++) {
-        hash += stk->data[i];
-        hash += hash << 10;
-        hash ^= hash >> 6;
+        hash = (hash << 4) + stk->data[i];
+        if (high = hash & 0xF0000000) {
+            hash ^= high >> 24;
+        }
+        hash &= ~high;
     }
-    hash += hash << 3;
-    hash ^= hash >> 11;
-    hash += hash << 15;
-    
     return hash;
 }
