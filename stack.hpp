@@ -18,6 +18,8 @@
 
 #define CHECKED_ if(!err) err =
 
+/* add __FILE__, __LINE__, __func__ */
+
 #define STACK_ASSERT(stk) {                             \
     if (StackVerification(stk) != NO_ERROR) {           \
             STACK_DUMP(stk);                            \
@@ -27,7 +29,7 @@
 
 #define STACK_CTOR(stk, initCapacity) StackCtor((stk), (initCapacity), __FILE__, __func__, __LINE__)
 
-#define STACK_DUMP(stk) StackDump((stk), __FILE__, __func__, __LINE__)
+#define STACK_DUMP(stk) StackDump((stk), __FILE__, __func__, __LINE__)      //#stk
 
 typedef int StackElem_t;
 
@@ -61,7 +63,7 @@ enum Errors {
 
 struct Stack_t {
 
-    ON_DEBUG(Canary_t left_canary = STACK_CANARY;)
+    ON_DEBUG(Canary_t left_canary = 0;)
 
     ON_DEBUG(Hash_t hash = 0;)
 
@@ -74,7 +76,7 @@ struct Stack_t {
     size_t position = 0;
     size_t capacity = 0;
 
-    ON_DEBUG(Canary_t right_canary = STACK_CANARY;)
+    ON_DEBUG(Canary_t right_canary = 0;)
 };
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line);

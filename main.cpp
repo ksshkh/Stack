@@ -34,9 +34,9 @@ int main(void) {
     CHECKED_ StackPop(&stk, &x);
     printf("%d\n", x);
     STACK_DUMP(&stk);
-    CHECKED_ StackPop(&stk, &x);
-    printf("%d\n", x);
-    STACK_DUMP(&stk);
+    // CHECKED_ StackPop(&stk, &x);
+    // printf("%d\n", x);
+    // STACK_DUMP(&stk);
     StackDtor(&stk);
 
     return 0;

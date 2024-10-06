@@ -1,17 +1,21 @@
 #include "stack.hpp"
 
-const char* errors_names[] = {"NO_ERROR", "SIZE_ERROR", "STACK_UNDERFLOW",
+const char* errors_names[] = {"NO_ERROR",
+                              "SIZE_ERROR",
+                              "STACK_UNDERFLOW",
                               "NO_STACK", "BAD_CAPACITY", "NO_DATA",
                               "BAD_DATA_RIGHT_CANARY", "BAD_DATA_LEFT_CANARY",
                               "BAD_STACK_RIGHT_CANARY", "BAD_STACK_LEFT_CANARY", "BAD_HASH"}; //hpp?????????
 
+// add hash_struct
+
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
-    if(!stk) {
+    if(!stk) {      // my_assert
         printf(RED("%s\n"), errors_names[NO_STACK]);
         return NO_STACK;
     }
 
-    else if(!initCapacity) {
+    if(!initCapacity) {
         printf(RED("%s\n"), errors_names[BAD_CAPACITY]);
         return BAD_CAPACITY;
     }
@@ -20,16 +24,31 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     ON_DEBUG(stk->func = func;)
     ON_DEBUG(stk->line = line;)
 
-    stk->data = (StackElem_t *) calloc(initCapacity ON_DEBUG(+ 2), sizeof(StackElem_t));
+
+    #ifdef DEBUG
+
+    stk->data = (StackElem_t *) calloc (initCapacity * sizeof (StackElem_t) + 2 * sizeof (Canary_t), sizeof (char));
+    // my_assert (stk->data != NULL)
+
+    *((Canary_t *) stk->data) = DATA_CANARY;
+    stk->data = (StackElem_t *) ((char *) stk->data + sizeof(Canary_t));
+    *((Canary_t *)(stk->data + initCapacity)) = DATA_CANARY;
+
+    stk->left_canary = STACK_CANARY;
+    stk->right_canary = STACK_CANARY;
+
+    #else
+
+    stk->data = (StackElem_t *) calloc(initCapacity, sizeof(StackElem_t));
+
+    #endif
+
     assert(stk->data);
 
     stk->capacity = initCapacity;
     stk->position = 0;
 
     PoisonMaker(stk);
-
-    ON_DEBUG(stk->data[0] = DATA_CANARY;)
-    ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
 
     ON_DEBUG(stk->hash = Hash(stk);)
 
@@ -40,6 +59,7 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
 void StackDtor(Stack_t* stk) { //, int *code_error
     STACK_ASSERT(stk);
 
+    ON_DEBUG(stk->data = (StackElem_t *) ((char *) stk->data - sizeof(Canary_t));)
     free(stk->data);
     stk->data = NULL;
 
@@ -54,7 +74,7 @@ Errors StackPush(Stack_t* stk, StackElem_t el) {
         StackReallocation(stk, PUSH_ID);
     }
 
-    stk->data[stk->position ON_DEBUG(+ 1)] = el;
+    stk->data[stk->position] = el;
     stk->position++;
 
     ON_DEBUG(stk->hash = Hash(stk);)
@@ -72,14 +92,16 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
     }
 
     stk->position--;
-    *x = stk->data[stk->position ON_DEBUG(+ 1)];
-    stk->data[stk->position ON_DEBUG(+ 1)] = POISON;
+    *x = stk->data[stk->position];
+    stk->data[stk->position] = POISON;
 
     ON_DEBUG(stk->hash = Hash(stk);)
 
     if(stk->capacity == stk->position * 4) {
         StackReallocation(stk, POP_ID);
     }
+
+    // ON_DEBUG(stk->hash = Hash(stk);)        // after realloc
 
     STACK_ASSERT(stk);
     return NO_ERROR;
@@ -104,16 +126,16 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line) {
         return;
     }
     printf("{\n");
-    ON_DEBUG(printf("data left canary: %#X\n", stk->data[0]);)
-    for(size_t i = 0 ON_DEBUG(+ 1); i < stk->capacity ON_DEBUG(+ 1); i++) {
-        if(i < stk->position ON_DEBUG(+ 1)) {
-           printf("    *[%lu] = %d\n", i ON_DEBUG(- 1), stk->data[i]);
+    ON_DEBUG(printf("\tdata left canary: %#llX\n", *((Canary_t *) stk->data - 1));)
+    for(size_t i = 0; i < stk->capacity; i++) {
+        if(i < stk->position) {
+           printf("\t*[%lu] = %d\n", i, stk->data[i]);
         }
         else {
-            printf("    [%lu] = %d(POISON)\n", i ON_DEBUG(- 1), stk->data[i]);
+            printf("\t[%lu] = %d(POISON)\n", i, stk->data[i]);
         }
     }
-    ON_DEBUG(printf("data right canary: %#X\n", stk->data[stk->capacity + 1]);)
+    ON_DEBUG(printf("\tdata right canary: %#llX\n", *((Canary_t *)(stk->data + stk->capacity)));)
     printf("}\n");
     ON_DEBUG(printf("stack right canary: %#llX\n", stk->right_canary);)
     printf("------------------------------------\n");
@@ -140,30 +162,34 @@ Errors StackVerification(const Stack_t* stk) {
         return STACK_UNDERFLOW;
     }
 
-    ON_DEBUG(else if(stk->hash != Hash(stk)) {                       \
-                printf(RED("%s\n"), errors_names[BAD_HASH]);              \
-                return BAD_HASH;                                     \
-    })                                                               \
+    #ifdef DEBUG
 
-    ON_DEBUG(else if(stk->data[0] != DATA_CANARY) {                  \
-                printf(RED("%s\n"), errors_names[BAD_DATA_LEFT_CANARY]);  \
-                return BAD_DATA_LEFT_CANARY;                         \
-    })                                                               \
+    else if(stk->hash != Hash(stk)) {
+        printf(RED("%s\n"), errors_names[BAD_HASH]);
+        return BAD_HASH;
+    }
 
-    ON_DEBUG(else if(stk->data[stk->capacity + 1] != DATA_CANARY) {  \
-                printf(RED("%s\n"), errors_names[BAD_DATA_RIGHT_CANARY]); \
-                return BAD_DATA_RIGHT_CANARY;                        \
-    })                                                               \
+    else if(*((Canary_t *) stk->data - 1) != DATA_CANARY) {
+        printf(RED("%s\n"), errors_names[BAD_DATA_LEFT_CANARY]);
+        return BAD_DATA_LEFT_CANARY;
+    }
 
-    ON_DEBUG(else if(stk->left_canary != STACK_CANARY) {             \
-                printf(RED("%s\n"), errors_names[BAD_STACK_LEFT_CANARY]); \
-                return BAD_STACK_LEFT_CANARY;                        \
-    })                                                               \
+    else if(*((Canary_t *)(stk->data + stk->capacity)) != DATA_CANARY) {
+        printf(RED("%s\n"), errors_names[BAD_DATA_RIGHT_CANARY]);
+        return BAD_DATA_RIGHT_CANARY;
+    }
 
-    ON_DEBUG(else if(stk->right_canary != STACK_CANARY) {            \
-                printf(RED("%s\n"), errors_names[BAD_STACK_RIGHT_CANARY]);\
-                return BAD_STACK_RIGHT_CANARY;                       \
-    })                                                               \
+    else if(stk->left_canary != STACK_CANARY) {
+        printf(RED("%s\n"), errors_names[BAD_STACK_LEFT_CANARY]);
+        return BAD_STACK_LEFT_CANARY;
+    }
+
+    else if(stk->right_canary != STACK_CANARY) {
+        printf(RED("%s\n"), errors_names[BAD_STACK_RIGHT_CANARY]);
+        return BAD_STACK_RIGHT_CANARY;
+    }
+
+    #endif
 
     return NO_ERROR;
 }
@@ -171,36 +197,62 @@ Errors StackVerification(const Stack_t* stk) {
 void StackReallocation(Stack_t* stk, FunkId id) {
     STACK_ASSERT(stk);
 
-    ON_DEBUG(stk->data[stk->capacity + 1] = 0;) //delete right canary
+
+    // *((Canary_t *)(stk->data + stk->capacity)) = 0;
+    ON_DEBUG(stk->data[stk->capacity] = 0;) //delete right canary
 
     if(id == PUSH_ID) {
         stk->capacity *= 2;
-        stk->data = (StackElem_t *) realloc(stk->data, sizeof(StackElem_t) * (stk->capacity ON_DEBUG(+ 2)));
+        #ifdef DEBUG
+
+        stk->data = (StackElem_t *) ((char *) stk->data - sizeof(Canary_t));
+        stk->data = (StackElem_t *) realloc (stk->data, stk->capacity * sizeof (StackElem_t) + 2 * sizeof (Canary_t));
+        // my_assert (stk->data != NULL)
+        stk->data = (StackElem_t *) ((char *) stk->data + sizeof(Canary_t));
+        *((Canary_t *)(stk->data + stk->capacity)) = DATA_CANARY;
+
+        #else
+
+        stk->data = (StackElem_t *) realloc(stk->data, sizeof(StackElem_t) * stk->capacity);
+
+        #endif
+
         assert(stk->data);
-        ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
     }
     else if(id == POP_ID) {
         stk->capacity /= 2;
-        stk->data = (StackElem_t *) realloc(stk->data, sizeof(StackElem_t) * (stk->capacity ON_DEBUG(+ 2)));
+        #ifdef DEBUG
+
+        stk->data = (StackElem_t *) ((char *) stk->data - sizeof(Canary_t));
+        stk->data = (StackElem_t *) realloc (stk->data, stk->capacity * sizeof (StackElem_t) + 2 * sizeof (Canary_t));
+        // my_assert (stk->data != NULL)
+        stk->data = (StackElem_t *) ((char *) stk->data + sizeof(Canary_t));
+        *((Canary_t *)(stk->data + stk->capacity)) = DATA_CANARY;
+
+        #else
+
+        stk->data = (StackElem_t *) realloc(stk->data, sizeof(StackElem_t) * stk->capacity);
+
+        #endif
+
         assert(stk->data);
-        ON_DEBUG(stk->data[stk->capacity + 1] = DATA_CANARY;)
     }
     PoisonMaker(stk);
 
-    ON_DEBUG(stk->hash = Hash(stk);)
+    // ON_DEBUG(stk->hash = Hash(stk);)
 
     STACK_ASSERT(stk);
 }
 
 void PoisonMaker(Stack_t* stk) {
-    for(size_t i = stk->position ON_DEBUG(+ 1); i < stk->capacity ON_DEBUG( +1); i++) {
+    for(size_t i = stk->position; i < stk->capacity; i++) {
         stk->data[i] = POISON;
     }
 }
 
 Hash_t Hash(const Stack_t* stk) {
     Hash_t hash = 0, high;
-    for (size_t i = 0 ON_DEBUG( +1); i < stk->position ON_DEBUG( +1); i++) {
+    for (size_t i = 0; i < stk->position; i++) {
         hash = (hash << 4) + stk->data[i];
         if (high = hash & 0xF0000000) {
             hash ^= high >> 24;
