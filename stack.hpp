@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "colors.hpp"
+#include "errors.hpp"
 
 #define DEBUG
 
@@ -16,20 +16,9 @@
     #define ON_DEBUG(code)
 #endif
 
-#define CHECKED_ if(!err) err =
-
-/* add __FILE__, __LINE__, __func__ */
-
-#define STACK_ASSERT(stk) {                             \
-    if (StackVerification(stk) != NO_ERROR) {           \
-            STACK_DUMP(stk);                            \
-            abort();                                    \
-    }                                                   \
-}
-
 #define STACK_CTOR(stk, initCapacity) StackCtor((stk), (initCapacity), __FILE__, __func__, __LINE__)
 
-#define STACK_DUMP(stk) StackDump((stk), __FILE__, __func__, __LINE__)      //#stk
+#define STACK_DUMP(stk) StackDump((stk), __FILE__, __func__, __LINE__)      
 
 typedef int StackElem_t;
 
@@ -47,27 +36,13 @@ enum FunkId {
     POP_ID
 };
 
-enum Errors {
-    NO_ERROR,
-    SIZE_ERROR,
-    STACK_UNDERFLOW,
-    NO_STACK,
-    BAD_CAPACITY,
-    NO_DATA,
-    BAD_DATA_RIGHT_CANARY,
-    BAD_DATA_LEFT_CANARY,
-    BAD_STACK_RIGHT_CANARY,
-    BAD_STACK_LEFT_CANARY,
-    BAD_HASH
-};
-
 struct Stack_t {
 
     ON_DEBUG(Canary_t left_canary = 0;)
 
-    ON_DEBUG(Hash_t hash = 0;)
+    ON_DEBUG(Hash_t stack_hash = 0;)
+    ON_DEBUG(Hash_t data_hash = 0;)
 
-    ON_DEBUG(const char* stack_name = 0;)
     ON_DEBUG(const char* file = 0;)
     ON_DEBUG(const char* func = 0;)
     ON_DEBUG(int line = 0;)
@@ -95,6 +70,8 @@ void StackReallocation(Stack_t* stk, FunkId id);
 
 void PoisonMaker(Stack_t* stk);
 
-Hash_t Hash(const Stack_t* stk);
+Hash_t DataHash(const Stack_t* stk);
+
+Hash_t StackHash(const Stack_t* stk);
 
 #endif // STACK_HPP
