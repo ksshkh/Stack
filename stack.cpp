@@ -8,8 +8,9 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     ON_DEBUG(stk->file = file;)
     ON_DEBUG(stk->func = func;)
     ON_DEBUG(stk->line = line;)
+    ON_DEBUG(stk->debug_file_name = output;)
 
-    #ifdef DEBUG
+#ifdef DEBUG
 
     stk->data = (StackElem_t*)calloc(initCapacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t), sizeof(char));
     MY_ASSERT (stk->data != NULL)
@@ -21,12 +22,12 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     stk->left_canary = STACK_CANARY;
     stk->right_canary = STACK_CANARY;
 
-    #else
+#else
 
     stk->data = (StackElem_t*)calloc(initCapacity * sizeof(StackElem_t), sizeof(StackElem_t));
     MY_ASSERT(stk->data != NULL);
 
-    #endif
+#endif
 
     stk->capacity = initCapacity;
     stk->position = 0;
@@ -40,7 +41,7 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     return NO_ERROR;
 }
 
-void StackDtor(Stack_t* stk, FILE* output) {
+void StackDtor(Stack_t* stk) {
     STACK_ASSERT(stk);
 
     ON_DEBUG(stk->data = (StackElem_t *) ((char *) stk->data - sizeof(Canary_t));)
@@ -58,14 +59,15 @@ void StackDtor(Stack_t* stk, FILE* output) {
     stk->left_canary = 0;
     stk->right_canary = 0;
     stk->stack_hash = 0;
+    stk->debug_file_name = NULL;
     #endif
 }
 
-Errors StackPush(Stack_t* stk, StackElem_t el, FILE* output) {
+Errors StackPush(Stack_t* stk, StackElem_t el) {
     STACK_ASSERT(stk);
 
     if(stk->position == stk->capacity) {
-        STACK_REALLOCATION(stk, PUSH_ID);
+        StackReallocation(stk, PUSH_ID);
     }
 
     stk->data[stk->position] = el;
@@ -78,16 +80,16 @@ Errors StackPush(Stack_t* stk, StackElem_t el, FILE* output) {
     return NO_ERROR;
 }
 
-Errors StackPop(Stack_t* stk, StackElem_t* x, FILE* output) {
+Errors StackPop(Stack_t* stk, StackElem_t* x) {
     STACK_ASSERT(stk);
 
     if(!stk->position) {
-        fprintf(output, ERR("%s"), errors_names[STACK_UNDERFLOW]);
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[STACK_UNDERFLOW]);
         return STACK_UNDERFLOW;
     }
 
-    if(stk->capacity > (stk->position - 1) * 4) {
-        STACK_REALLOCATION(stk, POP_ID);
+    if(stk->capacity > (stk->position - 1) * 3) {
+        StackReallocation(stk, POP_ID);
     }
 
     stk->position--;
@@ -101,108 +103,152 @@ Errors StackPop(Stack_t* stk, StackElem_t* x, FILE* output) {
     return NO_ERROR;
 }
 
-void StackDump(Stack_t* stk, const char* file, const char* func, int line, FILE* output) {
+void StackDump(Stack_t* stk, const char* file, const char* func, int line, Errors err) {
+
+    if(err == NO_STACK) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[NO_STACK]);
+        return;
+    }
+
+    else if(err == BAD_CAPACITY) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_CAPACITY]);
+    }
+
+    else if(err == SIZE_ERROR) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[SIZE_ERROR]);
+    }
+
+    else if(err == STACK_UNDERFLOW) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[STACK_UNDERFLOW]);
+    }
+
+#ifdef DEBUG
+
+    else if(err == BAD_HASH) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_HASH]);
+    }
+
+    else if(err == BAD_DATA_HASH) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_HASH]);
+    }
+
+    else if(err == BAD_STACK_HASH) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_HASH]);
+    }
+
+    else if(err == BAD_STACK_CANARIES) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_CANARIES]);
+    }
+
+    else if(err == BAD_STACK_LEFT_CANARY) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_LEFT_CANARY]);
+    }
+
+    else if(err == BAD_STACK_RIGHT_CANARY) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_RIGHT_CANARY]);
+    }
+
+    else if(err == BAD_DATA_CANARIES) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_CANARIES]);
+    }
+
+    else if(err == BAD_DATA_LEFT_CANARY) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_LEFT_CANARY]);
+    }
+
+    else if(err == BAD_DATA_RIGHT_CANARY) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_RIGHT_CANARY]);
+    }
+
+    #endif
     MY_ASSERT(stk != NULL);
 
-    fprintf(output, "------------------------------------\n");
-    fprintf(output, "Stack_t [%p]\n", stk);
-    fprintf(output, "called from %s: %d (%s)\n", file, line, func);
-    ON_DEBUG(fprintf(output, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
+    fprintf(stk->debug_file_name, "------------------------------------\n");
+    fprintf(stk->debug_file_name, "Stack_t [%p]\n", stk);
+    fprintf(stk->debug_file_name, "called from %s: %d (%s)\n", file, line, func);
+    ON_DEBUG(fprintf(stk->debug_file_name, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
 
-    ON_DEBUG(fprintf(output, "stack hash: %llu\n", stk->stack_hash);)
-    ON_DEBUG(fprintf(output, "data hash: %llu\n", stk->data_hash);)
+    ON_DEBUG(fprintf(stk->debug_file_name, "stack hash: %llu\n", stk->stack_hash);)
+    ON_DEBUG(fprintf(stk->debug_file_name, "data hash: %llu\n", stk->data_hash);)
 
-    ON_DEBUG(fprintf(output, "stack left canary: %#llX\n", stk->left_canary);)
+    ON_DEBUG(fprintf(stk->debug_file_name, "stack left canary: %#llX\n", stk->left_canary);)
 
-    fprintf(output, "capacity = %lu\n", stk->capacity);
-    fprintf(output, "position = %lu\n", stk->position);
-    fprintf(output, "data [%p]\n", stk->data);
+    fprintf(stk->debug_file_name, "capacity = %lu\n", stk->capacity);
+    fprintf(stk->debug_file_name, "position = %lu\n", stk->position);
+    fprintf(stk->debug_file_name, "data [%p]\n", stk->data);
     MY_ASSERT(stk->data != NULL);
 
-    fprintf(output, "{\n");
+    fprintf(stk->debug_file_name, "{\n");
 
-    ON_DEBUG(fprintf(output, "\tdata left canary: %#llX\n", *((Canary_t *) stk->data - 1));)
+    ON_DEBUG(fprintf(stk->debug_file_name, "\tdata left canary: %#llX\n", *((Canary_t *) stk->data - 1));)
 
     for(size_t i = 0; i < stk->capacity; i++) {
         if(i < stk->position) {
-           fprintf(output, "\t*[%lu] = %d\n", i, stk->data[i]);
+           fprintf(stk->debug_file_name, "\t*[%lu] = %d\n", i, stk->data[i]);
         }
         else {
-            fprintf(output, "\t[%lu] = %d(POISON)\n", i, stk->data[i]);
+            fprintf(stk->debug_file_name, "\t[%lu] = %d(POISON)\n", i, stk->data[i]);
         }
     }
 
-    ON_DEBUG(fprintf(output, "\tdata right canary: %#llX\n", *((Canary_t *)(stk->data + stk->capacity)));)
-    fprintf(output, "}\n");
-    ON_DEBUG(fprintf(output, "stack right canary: %#llX\n", stk->right_canary);)
-    fprintf(output, "------------------------------------\n");
+    ON_DEBUG(fprintf(stk->debug_file_name, "\tdata right canary: %#llX\n", *((Canary_t *)(stk->data + stk->capacity)));)
+    fprintf(stk->debug_file_name, "}\n");
+    ON_DEBUG(fprintf(stk->debug_file_name, "stack right canary: %#llX\n", stk->right_canary);)
+    fprintf(stk->debug_file_name, "------------------------------------\n");
 }
 
-Errors StackVerification(const Stack_t* stk, FILE* output) {
+Errors StackVerification(const Stack_t* stk) {
     if(!stk) {
         return NO_STACK;
-        fprintf(output, ERR("%s"), errors_names[NO_STACK]);
-    }
-
-    else if(stk->position > 0 && stk->capacity < stk->position) {
-        fprintf(output, ERR("%s"), errors_names[SIZE_ERROR]);
-        return SIZE_ERROR;
     }
 
     else if(!stk->capacity) {
-        fprintf(output, ERR("%s"), errors_names[BAD_CAPACITY]);
         return BAD_CAPACITY;
     }
 
+    else if(stk->capacity < stk->position) {
+        return SIZE_ERROR;
+    }
+
     else if(!stk->data) {
-        fprintf(output, ERR("%s"), errors_names[STACK_UNDERFLOW]);
         return STACK_UNDERFLOW;
     }
 
-    #ifdef DEBUG
+#ifdef DEBUG
 
     else if(stk->data_hash != DataHash(stk) && stk->stack_hash != StackHash(stk)) {
-        fprintf(output, ERR("%s"), errors_names[BAD_HASH]);
         return BAD_HASH;
     }
 
     else if(stk->data_hash != DataHash(stk)) {
-        fprintf(output, ERR("%s"), errors_names[BAD_DATA_HASH]);
         return BAD_DATA_HASH;
     }
 
     else if(stk->stack_hash != StackHash(stk)) {
-        fprintf(output, ERR("%s"), errors_names[BAD_STACK_HASH]);
         return BAD_STACK_HASH;
     }
 
     else if(stk->left_canary != STACK_CANARY && stk->right_canary != STACK_CANARY) {
-        fprintf(output, ERR("%s"), errors_names[BAD_STACK_CANARIES]);
         return BAD_STACK_CANARIES;
     }
 
     else if(stk->left_canary != STACK_CANARY) {
-        fprintf(output, ERR("%s"), errors_names[BAD_STACK_LEFT_CANARY]);
         return BAD_STACK_LEFT_CANARY;
     }
 
     else if(stk->right_canary != STACK_CANARY) {
-        fprintf(output, ERR("%s"), errors_names[BAD_STACK_RIGHT_CANARY]);
         return BAD_STACK_RIGHT_CANARY;
     }
 
     else if(*((Canary_t *) stk->data - 1) != DATA_CANARY && *((Canary_t *)(stk->data + stk->capacity)) != DATA_CANARY) {
-        fprintf(output, ERR("%s"), errors_names[BAD_DATA_CANARIES]);
         return BAD_DATA_CANARIES;
     }
 
     else if(*((Canary_t *) stk->data - 1) != DATA_CANARY) {
-        fprintf(output, ERR("%s"), errors_names[BAD_DATA_LEFT_CANARY]);
         return BAD_DATA_LEFT_CANARY;
     }
 
     else if(*((Canary_t *)(stk->data + stk->capacity)) != DATA_CANARY) {
-        fprintf(output, ERR("%s"), errors_names[BAD_DATA_RIGHT_CANARY]);
         return BAD_DATA_RIGHT_CANARY;
     }
 
@@ -211,15 +257,13 @@ Errors StackVerification(const Stack_t* stk, FILE* output) {
     return NO_ERROR;
 }
 
-void StackReallocation(Stack_t* stk, FunkId id, FILE* output) {
+void StackReallocation(Stack_t* stk, FunkId id) {
     STACK_ASSERT(stk);
-
-    ON_DEBUG(stk->data[stk->capacity] = 0;)
 
     if(id == PUSH_ID) {
         stk->capacity *= 2;
 
-        #ifdef DEBUG
+#ifdef DEBUG
 
         stk->data = (StackElem_t*)((char*)stk->data - sizeof(Canary_t));
         stk->data = (StackElem_t*)realloc(stk->data, stk->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t));
@@ -227,12 +271,12 @@ void StackReallocation(Stack_t* stk, FunkId id, FILE* output) {
         stk->data = (StackElem_t*)((char*)stk->data + sizeof(Canary_t));
         *((Canary_t*)(stk->data + stk->capacity)) = DATA_CANARY;
 
-        #else
+#else
 
         stk->data = (StackElem_t*) realloc(stk->data, sizeof(StackElem_t) * stk->capacity);
         MY_ASSERT(stk->data != NULL);
 
-        #endif
+#endif
     }
     else if(id == POP_ID) {
         stk->capacity /= 2;

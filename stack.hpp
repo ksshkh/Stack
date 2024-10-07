@@ -16,17 +16,17 @@
     #define ON_DEBUG(code)
 #endif
 
+#define STACK_ASSERT(stk) {                                           \
+    Errors err = StackVerification(stk);                              \
+    if (err != NO_ERROR) {                                            \
+            STACK_DUMP(stk);                                          \
+            exit(1);                                                  \
+    }                                                                 \
+}
+
 #define STACK_CTOR(stk, initCapacity) StackCtor((stk), (initCapacity), __FILE__, __func__, __LINE__, (output))
 
-#define STACK_DUMP(stk, output) StackDump((stk), __FILE__, __func__, __LINE__, (output))
-
-#define STACK_PUSH(stk, el) StackPush((stk), (el), (output))
-
-#define STACK_POP(stk, x) StackPop((stk), (x), (output))
-
-#define STACK_DTOR(stk) StackDtor((stk), (output))
-
-#define STACK_REALLOCATION(stk, id) StackReallocation((stk), (id), (output))
+#define STACK_DUMP(stk) StackDump((stk), __FILE__, __func__, __LINE__, err)
 
 typedef int StackElem_t;
 
@@ -44,7 +44,11 @@ enum FunkId {
     POP_ID
 };
 
+// add file in struct
+
 struct Stack_t {
+
+    ON_DEBUG(FILE* debug_file_name = NULL;)
 
     ON_DEBUG(Canary_t left_canary = 0;)
 
@@ -64,17 +68,17 @@ struct Stack_t {
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line, FILE* output);
 
-void StackDtor(Stack_t* stk, FILE* output);
+void StackDtor(Stack_t* stk);
 
-Errors StackPush(Stack_t* stk, StackElem_t el, FILE* output);
+Errors StackPush(Stack_t* stk, StackElem_t el);
 
-Errors StackPop(Stack_t* stk, StackElem_t* x, FILE* output);
+Errors StackPop(Stack_t* stk, StackElem_t* x);
 
-void StackDump(Stack_t* stk, const char* file, const char* func, int line, FILE* output);
+void StackDump(Stack_t* stk, const char* file, const char* func, int line, Errors err);
 
-Errors StackVerification(const Stack_t* stk, FILE* output);
+Errors StackVerification(const Stack_t* stk);
 
-void StackReallocation(Stack_t* stk, FunkId id, FILE* output);
+void StackReallocation(Stack_t* stk, FunkId id);
 
 void PoisonMaker(Stack_t* stk);
 

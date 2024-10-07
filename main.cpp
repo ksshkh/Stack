@@ -7,26 +7,27 @@ int main(void) {
     StackElem_t x = 0;
 
     FILE * output = fopen("dump.txt", "w+");
+    assert(output);
 
     CHECKED_ STACK_CTOR(&stk, 1);
-    STACK_DUMP(&stk, output);
+    STACK_DUMP(&stk);
 
     for(int i = 0; i < 10; i++) {
-        CHECKED_ STACK_PUSH(&stk, i * 10);
-        STACK_DUMP(&stk, output);
+        CHECKED_ StackPush(&stk, i * 10);
+        STACK_DUMP(&stk);
     }
 
-    // stk.data[1] = 900; for hash error
+    // stk.data[1] = 900; // for bad hash
 
     for(int i = 0; i < 10; i++) {
-        CHECKED_ STACK_POP(&stk, &x);
+        CHECKED_ StackPop(&stk, &x);
         fprintf(output, "pop: %d\n", x);
-        STACK_DUMP(&stk, output);
+        STACK_DUMP(&stk);
     }
 
-    // CHECKED_ STACK_POP(&stk, &x); for error stack underflow
+    // CHECKED_ StackPop(&stk, &x); // for error stack underflow
 
-    STACK_DTOR(&stk);
+    StackDtor(&stk);
 
     return 0;
 }
