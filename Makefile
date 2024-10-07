@@ -26,5 +26,4 @@ $(EXECUTABLE): $(OBJECTS)
 .PHONY: clean
 clean:
 	rm -rf *.o
-	rm -rf dump.txt
 	rm -rf stack.exe
