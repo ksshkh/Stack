@@ -43,7 +43,7 @@ const static char* errors_names[] = {"NO_ERROR",
 
 #define MY_ASSERT(expression, err) if(!(expression)) {                                                                      \
     fprintf(stderr, ERR("%s: %d (%s) My assertion failed: \"" #expression "\""), __FILE__, __LINE__, __func__);             \
-    ErrorSave(stk, err);                                                                                                    \
+    return err;                                                                                                             \
 }                                                                                                                           \
 
 #endif // ERRORS_HPP

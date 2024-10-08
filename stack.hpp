@@ -19,7 +19,6 @@
 #define STACK_ASSERT(stk) {                                           \
     Errors err = StackVerification(stk);                              \
     if (err != NO_ERROR) {                                            \
-        ErrorSave(stk, err);                                          \
         STACK_DUMP(stk);                                              \
         return err;                                                   \
     }                                                                 \
@@ -48,7 +47,6 @@ enum FunkId {
 struct Stack_t {
 
     const char* debug_file_name = NULL;
-    int error_list = 0;
 
     ON_DEBUG(Canary_t left_canary = 0;)
 
@@ -85,9 +83,5 @@ void PoisonMaker(Stack_t* stk);
 Hash_t DataHash(const Stack_t* stk);
 
 Hash_t StackHash(const Stack_t* stk);
-
-void ErrorSave(Stack_t* stk, Errors err);
-
-void ErrorPrint(Stack_t* stk, FILE* debug_file);
 
 #endif // STACK_HPP

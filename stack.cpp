@@ -28,7 +28,7 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
 #else
 
     stk->data = (StackElem_t*)calloc(initCapacity * sizeof(StackElem_t), sizeof(StackElem_t));
-    MY_ASSERT(stk->data != NULL);
+    MY_ASSERT(stk->data != NULL, NO_DATA);
 
 #endif
 
@@ -123,8 +123,6 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line, Error
         if(stk != NULL) {
 
             ON_DEBUG(fprintf(debug_file, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
-
-            ErrorPrint(stk, debug_file);
 
             ON_DEBUG(fprintf(debug_file, "stack hash: %llu\n", stk->stack_hash);)
             ON_DEBUG(fprintf(debug_file, "data hash: %llu\n", stk->data_hash);)
@@ -253,7 +251,7 @@ Errors StackReallocation(Stack_t* stk, FunkId id) {
 #else
 
         stk->data = (StackElem_t*) realloc(stk->data, sizeof(StackElem_t) * stk->capacity);
-        MY_ASSERT(stk->data != NULL);
+        MY_ASSERT(stk->data != NULL, NO_DATA);
 
 #endif
     }
@@ -271,7 +269,7 @@ Errors StackReallocation(Stack_t* stk, FunkId id) {
         #else
 
         stk->data = (StackElem_t*)realloc(stk->data, sizeof(StackElem_t) * stk->capacity);
-        MY_ASSERT(stk->data != NULL);
+        MY_ASSERT(stk->data != NULL, NO_DATA);
 
         #endif
     }
@@ -327,17 +325,4 @@ Hash_t StackHash(const Stack_t* stk) {
     hash += hash << 15;
 
     return hash;
-}
-
-void ErrorSave(Stack_t* stk, Errors err) {
-    stk->error_list |= (1 << err);
-}
-
-void ErrorPrint(Stack_t* stk, FILE* debug_file) {
-    int n = stk->error_list;
-    fprintf(debug_file, "errors: ");
-    for(int i = sizeof(n) - 1; i >= 0; i--) {
-        fprintf(debug_file, "%u", (n >> i) & 1);
-    }
-    fprintf(debug_file, "\n");
 }
