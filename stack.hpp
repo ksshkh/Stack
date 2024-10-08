@@ -48,7 +48,7 @@ enum FunkId {
 
 struct Stack_t {
 
-    ON_DEBUG(FILE* debug_file_name = NULL;)
+    FILE* debug_file_name = NULL;
 
     ON_DEBUG(Canary_t left_canary = 0;)
 

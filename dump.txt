@@ -1,107 +1,67 @@
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 13 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 309789835443
-data hash: 0
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 1
 position = 0
-data [0x5e43b8780488]
+data [0x5d4b452fc480]
 {
-	data left canary: 0XC0FFEE
 	[0] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 310087935036
-data hash: 0
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 1
 position = 1
-data [0x5e43b8780488]
+data [0x5d4b452fc480]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 3224942393360292
-data hash: 10
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 2
 position = 2
-data [0x5e43b8780488]
+data [0x5d4b452fc480]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 9666021411265923
-data hash: 180
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 4
 position = 3
-data [0x5e43b87814b8]
+data [0x5d4b452fc480]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
 	[3] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 19943450843387544
-data hash: 2910
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 4
 position = 4
-data [0x5e43b87814b8]
+data [0x5d4b452fc480]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
 	*[3] = 30
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 32259584977957458
-data hash: 46600
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 5
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -110,22 +70,15 @@ data [0x5e43b87814b8]
 	[5] = -666(POISON)
 	[6] = -666(POISON)
 	[7] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 47285636073174873
-data hash: 745650
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 6
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -134,22 +87,15 @@ data [0x5e43b87814b8]
 	*[5] = 50
 	[6] = -666(POISON)
 	[7] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 65989342639817091
-data hash: 11930460
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 7
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -158,22 +104,15 @@ data [0x5e43b87814b8]
 	*[5] = 50
 	*[6] = 60
 	[7] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 89947582692095007
-data hash: 190887430
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 8
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -182,22 +121,15 @@ data [0x5e43b87814b8]
 	*[5] = 50
 	*[6] = 60
 	*[7] = 70
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 114437551511853306
-data hash: 101408768
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 16
 position = 9
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -214,22 +146,15 @@ data [0x5e43b87814b8]
 	[13] = -666(POISON)
 	[14] = -666(POISON)
 	[15] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 ------------------------------------
-Stack_t [0x7ffc7d055250]
 called from main.cpp: 17 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 143221610275613694
-data hash: 11927610
-stack left canary: 0XACCE55ED
+Stack_t [0x7ffd2252d8b0]
 capacity = 16
 position = 10
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -246,23 +171,16 @@ data [0x5e43b87814b8]
 	[13] = -666(POISON)
 	[14] = -666(POISON)
 	[15] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 90
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 114437551511853306
-data hash: 101408768
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 16
 position = 9
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -279,23 +197,16 @@ data [0x5e43b87814b8]
 	[13] = -666(POISON)
 	[14] = -666(POISON)
 	[15] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 80
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 89945038319135868
-data hash: 190887430
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 16
 position = 8
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -312,23 +223,16 @@ data [0x5e43b87814b8]
 	[13] = -666(POISON)
 	[14] = -666(POISON)
 	[15] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 70
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 65977549934806125
-data hash: 11930460
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 16
 position = 7
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -345,23 +249,16 @@ data [0x5e43b87814b8]
 	[13] = -666(POISON)
 	[14] = -666(POISON)
 	[15] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 60
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 47282772224224350
-data hash: 745650
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 16
 position = 6
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -378,23 +275,16 @@ data [0x5e43b87814b8]
 	[13] = -666(POISON)
 	[14] = -666(POISON)
 	[15] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 50
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 32259584977957458
-data hash: 46600
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 5
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -403,23 +293,16 @@ data [0x5e43b87814b8]
 	[5] = -666(POISON)
 	[6] = -666(POISON)
 	[7] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 40
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 19332044448103629
-data hash: 2910
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 4
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -428,23 +311,16 @@ data [0x5e43b87814b8]
 	[5] = -666(POISON)
 	[6] = -666(POISON)
 	[7] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 30
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 9664014728181132
-data hash: 180
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 8
 position = 3
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	*[2] = 20
@@ -453,66 +329,42 @@ data [0x5e43b87814b8]
 	[5] = -666(POISON)
 	[6] = -666(POISON)
 	[7] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 20
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 3206680914532392
-data hash: 10
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 4
 position = 2
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	*[1] = 10
 	[2] = -666(POISON)
 	[3] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 10
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 620491304466
-data hash: 0
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 2
 position = 1
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	*[0] = 0
 	[1] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
 pop: 0
 ------------------------------------
-Stack_t [0x7ffc7d055250]
-called from main.cpp: 25 (main)
-stack born at main.cpp: 12 (main)
-stack hash: 309789835443
-data hash: 0
-stack left canary: 0XACCE55ED
+called from main.cpp: 26 (main)
+Stack_t [0x7ffd2252d8b0]
 capacity = 1
 position = 0
-data [0x5e43b87814b8]
+data [0x5d4b452fd4b0]
 {
-	data left canary: 0XC0FFEE
 	[0] = -666(POISON)
-	data right canary: 0XC0FFEE
 }
-stack right canary: 0XACCE55ED
 ------------------------------------
-[STACK_UNDERFLOW]

@@ -8,7 +8,8 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     ON_DEBUG(stk->file = file;)
     ON_DEBUG(stk->func = func;)
     ON_DEBUG(stk->line = line;)
-    ON_DEBUG(stk->debug_file_name = output;)
+    
+    stk->debug_file_name = output;
 
 #ifdef DEBUG
 
@@ -105,7 +106,10 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
 
 void StackDump(Stack_t* stk, const char* file, const char* func, int line, Errors err) {
 
-    if(err == NO_STACK) {
+    fprintf(stk->debug_file_name, "------------------------------------\n");
+    fprintf(stk->debug_file_name, "called from %s: %d (%s)\n", file, line, func);
+
+    if(err == NO_STACK || !stk) {
         fprintf(stk->debug_file_name, ERR("%s"), errors_names[NO_STACK]);
         return;
     }
@@ -116,10 +120,6 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line, Error
 
     else if(err == SIZE_ERROR) {
         fprintf(stk->debug_file_name, ERR("%s"), errors_names[SIZE_ERROR]);
-    }
-
-    else if(err == STACK_UNDERFLOW) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[STACK_UNDERFLOW]);
     }
 
 #ifdef DEBUG
@@ -161,11 +161,9 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line, Error
     }
 
     #endif
-    MY_ASSERT(stk != NULL);
 
-    fprintf(stk->debug_file_name, "------------------------------------\n");
     fprintf(stk->debug_file_name, "Stack_t [%p]\n", stk);
-    fprintf(stk->debug_file_name, "called from %s: %d (%s)\n", file, line, func);
+
     ON_DEBUG(fprintf(stk->debug_file_name, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
 
     ON_DEBUG(fprintf(stk->debug_file_name, "stack hash: %llu\n", stk->stack_hash);)
@@ -176,7 +174,11 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line, Error
     fprintf(stk->debug_file_name, "capacity = %lu\n", stk->capacity);
     fprintf(stk->debug_file_name, "position = %lu\n", stk->position);
     fprintf(stk->debug_file_name, "data [%p]\n", stk->data);
-    MY_ASSERT(stk->data != NULL);
+
+    if(err == NO_DATA) {
+        fprintf(stk->debug_file_name, ERR("%s"), errors_names[NO_DATA]);
+        return;
+    }
 
     fprintf(stk->debug_file_name, "{\n");
 
@@ -211,7 +213,7 @@ Errors StackVerification(const Stack_t* stk) {
     }
 
     else if(!stk->data) {
-        return STACK_UNDERFLOW;
+        return NO_DATA;
     }
 
 #ifdef DEBUG

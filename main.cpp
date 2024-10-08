@@ -18,6 +18,7 @@ int main(void) {
     }
 
     // stk.data[1] = 900; // for bad hash
+    // stk.data = NULL; // for no data
 
     for(int i = 0; i < 10; i++) {
         CHECKED_ StackPop(&stk, &x);
