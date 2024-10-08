@@ -1,6 +1,6 @@
 #include "stack.hpp"
 
-const char * DEBUG_FILE_NAME = "./dump.txt";
+const char * DEBUG_FILE_NAME = "./debug/dump.txt";
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
 
@@ -115,59 +115,59 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line, Error
         fprintf(debug_file, "called from %s: %d (%s)\n", file, line, func);
 
         if(err != NO_ERROR) {
-            fprintf(debug_file, ERR("%s\n"), errors_names[err]);
+            fprintf(debug_file, "%s\n", errors_names[err]);
         }
 
         fprintf(debug_file, "Stack_t [%p]\n", stk);
+        fprintf(debug_file, "{\n");
 
         if(stk != NULL) {
 
-            ON_DEBUG(fprintf(debug_file, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
+            ON_DEBUG(fprintf(debug_file, "\tstack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
 
-            ON_DEBUG(fprintf(debug_file, "stack hash: %llu\n", stk->stack_hash);)
-            ON_DEBUG(fprintf(debug_file, "data hash: %llu\n", stk->data_hash);)
+            ON_DEBUG(fprintf(debug_file, "\tstack hash: %#llx\n", stk->stack_hash);)
+            ON_DEBUG(fprintf(debug_file, "\tdata hash: %#llx\n", stk->data_hash);)
 
-            ON_DEBUG(fprintf(debug_file, "stack left canary: %#llX\n", stk->left_canary);)
+            ON_DEBUG(fprintf(debug_file, "\tstack left canary: %#llx\n", stk->left_canary);)
 
-            fprintf(debug_file, "capacity = %lu\n", stk->capacity);
-            fprintf(debug_file, "position = %lu\n", stk->position);
-            fprintf(debug_file, "data [%p]\n", stk->data);
+            fprintf(debug_file, "\tcapacity = %lu\n", stk->capacity);
+            fprintf(debug_file, "\tposition = %lu\n", stk->position);
+            fprintf(debug_file, "\tdata [%p]\n", stk->data);
 
             if(stk->data != NULL) {
-                fprintf(debug_file, "{\n");
+                fprintf(debug_file, "\t{\n");
 
-                ON_DEBUG(fprintf(debug_file, "\tdata left canary: %#llX\n", *((Canary_t*) stk->data - 1));)
+                ON_DEBUG(fprintf(debug_file, "\t\tdata left canary: %#llx\n", *((Canary_t*) stk->data - 1));)
 
                 if(stk->capacity != 0) {
                     for(size_t i = 0; i < stk->capacity; i++) {
                         if(i < stk->position) {
-                            fprintf(debug_file, "\t*[%lu] = %d\n", i, stk->data[i]);
+                            fprintf(debug_file, "\t\t*[%lu] = %d\n", i, stk->data[i]);
                         }
                         else {
-                            fprintf(debug_file, "\t[%lu] = %d(POISON)\n", i, stk->data[i]);
+                            fprintf(debug_file, "\t\t[%lu] = %d(POISON)\n", i, stk->data[i]);
                         }
                     }
                 }
-                else {
-                    fprintf(debug_file, ERR("%s\n"), errors_names[BAD_CAPACITY]);
+                else if(stk->position != 0) {
+                    for(size_t i = 0; i < stk->position; i++) {
+                        fprintf(debug_file, "\t\t*[%lu] = %d\n", i, stk->data[i]);
+                    }
                 }
 
-                ON_DEBUG(fprintf(debug_file, "\tdata right canary: %#llX\n", *((Canary_t*)(stk->data + stk->capacity)));)
-                fprintf(debug_file, "}\n");
-            }
-            else {
-                fprintf(debug_file, ERR("%s\n"), errors_names[NO_DATA]);
+                ON_DEBUG(fprintf(debug_file, "\t\tdata right canary: %#llx\n", *((Canary_t*)(stk->data + stk->capacity)));)
+                fprintf(debug_file, "\t}\n");
             }
 
-            ON_DEBUG(fprintf(debug_file, "stack right canary: %#llX\n", stk->right_canary);)
-        }
-        else {
-            fprintf(debug_file, ERR("%s\n"), errors_names[NO_STACK]);
+            ON_DEBUG(fprintf(debug_file, "\tstack right canary: %#llx\n", stk->right_canary);)
         }
 
-        fprintf(debug_file, "------------------------------------\n");
+        fprintf(debug_file, "}\n");
+        fprintf(debug_file, "------------------------------------\n\n\n");
 
-        fclose(debug_file);
+        if(fclose(debug_file)) {
+            fprintf(stderr, "file did not close\n");
+        }
     }
     else {
         fprintf(stderr, "file did not open\n");
