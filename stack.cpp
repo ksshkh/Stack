@@ -1,20 +1,22 @@
 #include "stack.hpp"
 
-Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line, FILE* output) {
+const char * DEBUG_FILE_NAME = "./dump.txt";
 
-    MY_ASSERT(stk != NULL);
-    MY_ASSERT(initCapacity != 0);
+Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
+
+    MY_ASSERT(stk != NULL, PTR_ERROR);
+    MY_ASSERT(initCapacity != 0, SIZE_ERROR);
 
     ON_DEBUG(stk->file = file;)
     ON_DEBUG(stk->func = func;)
     ON_DEBUG(stk->line = line;)
-    
-    stk->debug_file_name = output;
+
+    stk->debug_file_name = DEBUG_FILE_NAME;
 
 #ifdef DEBUG
 
     stk->data = (StackElem_t*)calloc(initCapacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t), sizeof(char));
-    MY_ASSERT (stk->data != NULL)
+    MY_ASSERT (stk->data != NULL, PTR_ERROR)
 
     *((Canary_t*)stk->data) = DATA_CANARY;
     stk->data = (StackElem_t*)((char*) stk->data + sizeof(Canary_t));
@@ -42,7 +44,7 @@ Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char
     return NO_ERROR;
 }
 
-void StackDtor(Stack_t* stk) {
+Errors StackDtor(Stack_t* stk) {
     STACK_ASSERT(stk);
 
     ON_DEBUG(stk->data = (StackElem_t *) ((char *) stk->data - sizeof(Canary_t));)
@@ -62,6 +64,8 @@ void StackDtor(Stack_t* stk) {
     stk->stack_hash = 0;
     stk->debug_file_name = NULL;
     #endif
+
+    return NO_ERROR;
 }
 
 Errors StackPush(Stack_t* stk, StackElem_t el) {
@@ -84,10 +88,7 @@ Errors StackPush(Stack_t* stk, StackElem_t el) {
 Errors StackPop(Stack_t* stk, StackElem_t* x) {
     STACK_ASSERT(stk);
 
-    if(!stk->position) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[STACK_UNDERFLOW]);
-        return STACK_UNDERFLOW;
-    }
+    MY_ASSERT(stk->position != 0, STACK_UNDERFLOW)
 
     if(stk->capacity > (stk->position - 1) * 3) {
         StackReallocation(stk, POP_ID);
@@ -106,97 +107,73 @@ Errors StackPop(Stack_t* stk, StackElem_t* x) {
 
 void StackDump(Stack_t* stk, const char* file, const char* func, int line, Errors err) {
 
-    fprintf(stk->debug_file_name, "------------------------------------\n");
-    fprintf(stk->debug_file_name, "called from %s: %d (%s)\n", file, line, func);
+    FILE* debug_file = fopen(stk->debug_file_name, "a");
 
-    if(err == NO_STACK || !stk) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[NO_STACK]);
-        return;
-    }
+    if(debug_file != NULL) {
 
-    else if(err == BAD_CAPACITY) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_CAPACITY]);
-    }
+        fprintf(debug_file, "------------------------------------\n");
+        fprintf(debug_file, "called from %s: %d (%s)\n", file, line, func);
 
-    else if(err == SIZE_ERROR) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[SIZE_ERROR]);
-    }
+        if(err != NO_ERROR) {
+            fprintf(debug_file, ERR("%s\n"), errors_names[err]);
+        }
 
-#ifdef DEBUG
+        fprintf(debug_file, "Stack_t [%p]\n", stk);
 
-    else if(err == BAD_HASH) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_HASH]);
-    }
+        if(stk != NULL) {
 
-    else if(err == BAD_DATA_HASH) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_HASH]);
-    }
+            ON_DEBUG(fprintf(debug_file, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
 
-    else if(err == BAD_STACK_HASH) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_HASH]);
-    }
+            ErrorPrint(stk, debug_file);
 
-    else if(err == BAD_STACK_CANARIES) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_CANARIES]);
-    }
+            ON_DEBUG(fprintf(debug_file, "stack hash: %llu\n", stk->stack_hash);)
+            ON_DEBUG(fprintf(debug_file, "data hash: %llu\n", stk->data_hash);)
 
-    else if(err == BAD_STACK_LEFT_CANARY) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_LEFT_CANARY]);
-    }
+            ON_DEBUG(fprintf(debug_file, "stack left canary: %#llX\n", stk->left_canary);)
 
-    else if(err == BAD_STACK_RIGHT_CANARY) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_STACK_RIGHT_CANARY]);
-    }
+            fprintf(debug_file, "capacity = %lu\n", stk->capacity);
+            fprintf(debug_file, "position = %lu\n", stk->position);
+            fprintf(debug_file, "data [%p]\n", stk->data);
 
-    else if(err == BAD_DATA_CANARIES) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_CANARIES]);
-    }
+            if(stk->data != NULL) {
+                fprintf(debug_file, "{\n");
 
-    else if(err == BAD_DATA_LEFT_CANARY) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_LEFT_CANARY]);
-    }
+                ON_DEBUG(fprintf(debug_file, "\tdata left canary: %#llX\n", *((Canary_t*) stk->data - 1));)
 
-    else if(err == BAD_DATA_RIGHT_CANARY) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[BAD_DATA_RIGHT_CANARY]);
-    }
+                if(stk->capacity != 0) {
+                    for(size_t i = 0; i < stk->capacity; i++) {
+                        if(i < stk->position) {
+                            fprintf(debug_file, "\t*[%lu] = %d\n", i, stk->data[i]);
+                        }
+                        else {
+                            fprintf(debug_file, "\t[%lu] = %d(POISON)\n", i, stk->data[i]);
+                        }
+                    }
+                }
+                else {
+                    fprintf(debug_file, ERR("%s\n"), errors_names[BAD_CAPACITY]);
+                }
 
-    #endif
+                ON_DEBUG(fprintf(debug_file, "\tdata right canary: %#llX\n", *((Canary_t*)(stk->data + stk->capacity)));)
+                fprintf(debug_file, "}\n");
+            }
+            else {
+                fprintf(debug_file, ERR("%s\n"), errors_names[NO_DATA]);
+            }
 
-    fprintf(stk->debug_file_name, "Stack_t [%p]\n", stk);
-
-    ON_DEBUG(fprintf(stk->debug_file_name, "stack born at %s: %d (%s)\n", stk->file, stk->line, stk->func);)
-
-    ON_DEBUG(fprintf(stk->debug_file_name, "stack hash: %llu\n", stk->stack_hash);)
-    ON_DEBUG(fprintf(stk->debug_file_name, "data hash: %llu\n", stk->data_hash);)
-
-    ON_DEBUG(fprintf(stk->debug_file_name, "stack left canary: %#llX\n", stk->left_canary);)
-
-    fprintf(stk->debug_file_name, "capacity = %lu\n", stk->capacity);
-    fprintf(stk->debug_file_name, "position = %lu\n", stk->position);
-    fprintf(stk->debug_file_name, "data [%p]\n", stk->data);
-
-    if(err == NO_DATA) {
-        fprintf(stk->debug_file_name, ERR("%s"), errors_names[NO_DATA]);
-        return;
-    }
-
-    fprintf(stk->debug_file_name, "{\n");
-
-    ON_DEBUG(fprintf(stk->debug_file_name, "\tdata left canary: %#llX\n", *((Canary_t *) stk->data - 1));)
-
-    for(size_t i = 0; i < stk->capacity; i++) {
-        if(i < stk->position) {
-           fprintf(stk->debug_file_name, "\t*[%lu] = %d\n", i, stk->data[i]);
+            ON_DEBUG(fprintf(debug_file, "stack right canary: %#llX\n", stk->right_canary);)
         }
         else {
-            fprintf(stk->debug_file_name, "\t[%lu] = %d(POISON)\n", i, stk->data[i]);
+            fprintf(debug_file, ERR("%s\n"), errors_names[NO_STACK]);
         }
-    }
 
-    ON_DEBUG(fprintf(stk->debug_file_name, "\tdata right canary: %#llX\n", *((Canary_t *)(stk->data + stk->capacity)));)
-    fprintf(stk->debug_file_name, "}\n");
-    ON_DEBUG(fprintf(stk->debug_file_name, "stack right canary: %#llX\n", stk->right_canary);)
-    fprintf(stk->debug_file_name, "------------------------------------\n");
+        fprintf(debug_file, "------------------------------------\n");
+
+        fclose(debug_file);
+    }
+    else {
+        fprintf(stderr, "file did not open\n");
+    }
 }
 
 Errors StackVerification(const Stack_t* stk) {
@@ -259,7 +236,7 @@ Errors StackVerification(const Stack_t* stk) {
     return NO_ERROR;
 }
 
-void StackReallocation(Stack_t* stk, FunkId id) {
+Errors StackReallocation(Stack_t* stk, FunkId id) {
     STACK_ASSERT(stk);
 
     if(id == PUSH_ID) {
@@ -269,7 +246,7 @@ void StackReallocation(Stack_t* stk, FunkId id) {
 
         stk->data = (StackElem_t*)((char*)stk->data - sizeof(Canary_t));
         stk->data = (StackElem_t*)realloc(stk->data, stk->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t));
-        MY_ASSERT(stk->data != NULL);
+        MY_ASSERT(stk->data != NULL, NO_DATA);
         stk->data = (StackElem_t*)((char*)stk->data + sizeof(Canary_t));
         *((Canary_t*)(stk->data + stk->capacity)) = DATA_CANARY;
 
@@ -287,7 +264,7 @@ void StackReallocation(Stack_t* stk, FunkId id) {
 
         stk->data = (StackElem_t*)((char*)stk->data - sizeof(Canary_t));
         stk->data = (StackElem_t*)realloc(stk->data, stk->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t));
-        MY_ASSERT(stk->data != NULL);
+        MY_ASSERT(stk->data != NULL, NO_DATA);
         stk->data = (StackElem_t*)((char*)stk->data + sizeof(Canary_t));
         *((Canary_t*)(stk->data + stk->capacity)) = DATA_CANARY;
 
@@ -305,6 +282,7 @@ void StackReallocation(Stack_t* stk, FunkId id) {
     ON_DEBUG(stk->stack_hash = StackHash(stk);)
 
     STACK_ASSERT(stk);
+    return NO_ERROR;
 }
 
 void PoisonMaker(Stack_t* stk) {
@@ -349,4 +327,17 @@ Hash_t StackHash(const Stack_t* stk) {
     hash += hash << 15;
 
     return hash;
+}
+
+void ErrorSave(Stack_t* stk, Errors err) {
+    stk->error_list |= (1 << err);
+}
+
+void ErrorPrint(Stack_t* stk, FILE* debug_file) {
+    int n = stk->error_list;
+    fprintf(debug_file, "errors: ");
+    for(int i = sizeof(n) - 1; i >= 0; i--) {
+        fprintf(debug_file, "%u", (n >> i) & 1);
+    }
+    fprintf(debug_file, "\n");
 }

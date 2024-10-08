@@ -19,12 +19,13 @@
 #define STACK_ASSERT(stk) {                                           \
     Errors err = StackVerification(stk);                              \
     if (err != NO_ERROR) {                                            \
-            STACK_DUMP(stk);                                          \
-            exit(1);                                                  \
+        ErrorSave(stk, err);                                          \
+        STACK_DUMP(stk);                                              \
+        return err;                                                   \
     }                                                                 \
 }
 
-#define STACK_CTOR(stk, initCapacity) StackCtor((stk), (initCapacity), __FILE__, __func__, __LINE__, (output))
+#define STACK_CTOR(stk, initCapacity) StackCtor((stk), (initCapacity), __FILE__, __func__, __LINE__)
 
 #define STACK_DUMP(stk) StackDump((stk), __FILE__, __func__, __LINE__, err)
 
@@ -44,11 +45,10 @@ enum FunkId {
     POP_ID
 };
 
-// add file in struct
-
 struct Stack_t {
 
-    FILE* debug_file_name = NULL;
+    const char* debug_file_name = NULL;
+    int error_list = 0;
 
     ON_DEBUG(Canary_t left_canary = 0;)
 
@@ -66,9 +66,9 @@ struct Stack_t {
     ON_DEBUG(Canary_t right_canary = 0;)
 };
 
-Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line, FILE* output);
+Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line);
 
-void StackDtor(Stack_t* stk);
+Errors StackDtor(Stack_t* stk);
 
 Errors StackPush(Stack_t* stk, StackElem_t el);
 
@@ -78,12 +78,16 @@ void StackDump(Stack_t* stk, const char* file, const char* func, int line, Error
 
 Errors StackVerification(const Stack_t* stk);
 
-void StackReallocation(Stack_t* stk, FunkId id);
+Errors StackReallocation(Stack_t* stk, FunkId id);
 
 void PoisonMaker(Stack_t* stk);
 
 Hash_t DataHash(const Stack_t* stk);
 
 Hash_t StackHash(const Stack_t* stk);
+
+void ErrorSave(Stack_t* stk, Errors err);
+
+void ErrorPrint(Stack_t* stk, FILE* debug_file);
 
 #endif // STACK_HPP
