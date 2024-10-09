@@ -69,7 +69,6 @@ Errors StackDtor(Stack_t* stk) {
 }
 
 Errors StackPush(Stack_t* stk, StackElem_t el) {
-    STACK_ASSERT(stk);
 
     if(stk->position == stk->capacity) {
         StackReallocation(stk, PUSH_ID);
@@ -87,8 +86,6 @@ Errors StackPush(Stack_t* stk, StackElem_t el) {
 
 Errors StackPop(Stack_t* stk, StackElem_t* x) {
     STACK_ASSERT(stk);
-
-    MY_ASSERT(stk->position != 0, STACK_UNDERFLOW)
 
     if(stk->capacity > (stk->position - 1) * 3) {
         StackReallocation(stk, POP_ID);
