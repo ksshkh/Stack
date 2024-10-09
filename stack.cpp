@@ -69,6 +69,7 @@ Errors StackDtor(Stack_t* stk) {
 }
 
 Errors StackPush(Stack_t* stk, StackElem_t el) {
+    STACK_ASSERT(stk);
 
     if(stk->position == stk->capacity) {
         StackReallocation(stk, PUSH_ID);

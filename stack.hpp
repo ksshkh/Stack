@@ -20,7 +20,6 @@
     Errors err = StackVerification(stk);                              \
     if (err != NO_ERROR) {                                            \
         STACK_DUMP(stk);                                              \
-        return err;                                                   \
     }                                                                 \
 }
 
