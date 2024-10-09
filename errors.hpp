@@ -22,23 +22,6 @@ enum Errors {
     BAD_STACK_CANARIES
 };
 
-const static char* errors_names[] = {"NO_ERROR",
-                                     "PTR_ERROR",
-                                     "SIZE_ERROR",
-                                     "STACK_UNDERFLOW",
-                                     "NO_STACK",
-                                     "BAD_CAPACITY",
-                                     "NO_DATA",
-                                     "BAD_DATA_RIGHT_CANARY",
-                                     "BAD_DATA_LEFT_CANARY",
-                                     "BAD_STACK_RIGHT_CANARY",
-                                     "BAD_STACK_LEFT_CANARY",
-                                     "BAD_DATA_HASH",
-                                     "BAD_STACK_HASH",
-                                     "BAD_HASH",
-                                     "BAD_DATA_CANARIES",
-                                     "BAD_STACK_CANARIES"};
-
 #define CHECKED_ if(!err) err =
 
 #define MY_ASSERT(expression, err) if(!(expression)) {                                                                      \

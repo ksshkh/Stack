@@ -20,6 +20,7 @@
     Errors err = StackVerification(stk);                              \
     if (err != NO_ERROR) {                                            \
         STACK_DUMP(stk);                                              \
+        return err;                                                   \
     }                                                                 \
 }
 
@@ -52,8 +53,8 @@ struct Stack_t {
     ON_DEBUG(Hash_t stack_hash = 0;)
     ON_DEBUG(Hash_t data_hash = 0;)
 
-    ON_DEBUG(const char* file = 0;)
-    ON_DEBUG(const char* func = 0;)
+    ON_DEBUG(const char* file = NULL;)
+    ON_DEBUG(const char* func = NULL;)
     ON_DEBUG(int line = 0;)
 
     StackElem_t* data = NULL;

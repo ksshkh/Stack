@@ -1,6 +1,23 @@
 #include "stack.hpp"
 
-const char * DEBUG_FILE_NAME = "./debug/dump.txt";
+static const char * DEBUG_FILE_NAME = "./debug/dump.txt";
+
+static const char* errors_names[] = {"NO_ERROR",
+                              "PTR_ERROR",
+                              "SIZE_ERROR",
+                              "STACK_UNDERFLOW",
+                              "NO_STACK",
+                              "BAD_CAPACITY",
+                              "NO_DATA",
+                              "BAD_DATA_RIGHT_CANARY",
+                              "BAD_DATA_LEFT_CANARY",
+                              "BAD_STACK_RIGHT_CANARY",
+                              "BAD_STACK_LEFT_CANARY",
+                              "BAD_DATA_HASH",
+                              "BAD_STACK_HASH",
+                              "BAD_HASH",
+                              "BAD_DATA_CANARIES",
+                              "BAD_STACK_CANARIES"};
 
 Errors StackCtor(Stack_t* stk, size_t initCapacity, const char* file, const char* func, int line) {
 
@@ -86,7 +103,9 @@ Errors StackPush(Stack_t* stk, StackElem_t el) {
 }
 
 Errors StackPop(Stack_t* stk, StackElem_t* x) {
+    MY_ASSERT(x != NULL, PTR_ERROR);
     STACK_ASSERT(stk);
+    MY_ASSERT(stk->position != 0, STACK_UNDERFLOW);
 
     if(stk->capacity > (stk->position - 1) * 3) {
         StackReallocation(stk, POP_ID);
@@ -227,7 +246,7 @@ Errors StackVerification(const Stack_t* stk) {
         return BAD_DATA_RIGHT_CANARY;
     }
 
-    #endif
+#endif
 
     return NO_ERROR;
 }

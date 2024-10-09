@@ -8,11 +8,11 @@ int main(void) {
 
     CHECKED_ STACK_CTOR(&stk, 5);
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 1000; i++) {
         CHECKED_ StackPush(&stk, i * 10);
     }
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 1000; i++) {
         CHECKED_ StackPop(&stk, &x);
     }
 
